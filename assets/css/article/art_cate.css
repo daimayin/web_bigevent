@@ -15,9 +15,7 @@ body {
     align-items: center;
 }
 
-/* #Addcate{
-    margin-top: 20px;
-    margin-bottom: 20px;
-    display: none;
-    width: 450px;
-} */
+#Addcate,#Editcate{
+    padding-right: 20px;
+    padding-top: 20px;
+}
