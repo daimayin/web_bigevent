@@ -20,25 +20,24 @@ $(function () {
     function initTable() {
         $.ajax({
             method: "GET",
-            // url:'/my/article/list',
-            url: '/my/article/cates',
-            // data: q,
+            url: '/my/article/list',
+            data: q,
             success: function (res) {
                 if (res.status !== 0) {
                     return layer.msg(res.message)
                 }
+                // console.log(res);
                 let htmlstr = template('tpl-table', res)
                 $('tbody').html(htmlstr)
                 // 调用渲染分页的方法
-                // renderPage(res.total)
-                renderPage(res.data.length)
+                renderPage(res.total)
             }
         })
     }
 
     // 定义美化时间的过滤器
     template.defaults.imports.dataFormat = function (date) {
-        let dt = new Date()
+        let dt = new Date(date)
 
         let y = dt.getFullYear()
         let m = padZero(dt.getMonth() + 1)
@@ -86,23 +85,51 @@ $(function () {
     })
 
     // 定义渲染分页的方法
-    function renderPage(total){
+    function renderPage(total) {
         // 调用laypage.render（）方法渲染分页结构
         laypage.render({
-            elem:'pageBox',//指定盒子
-            count:total,//总数居条数
-            limit:q.pagesize,//每页显示几条数据
-            curr:q.pagenum,  //默认选中的分页
-            limits:[2,3,5,10],
-            layout:['count','limit','prev', 'page', 'next','skip'],
+            elem: 'pageBox', //指定盒子
+            count: total, //总数居条数
+            limit: q.pagesize, //每页显示几条数据
+            curr: q.pagenum, //默认选中的分页
+            limits: [2, 3, 5, 10],
+            layout: ['count', 'limit', 'prev', 'page', 'next', 'skip'],
             // 切换分页触发回调
-            jump:function(obj,first){
+            jump: function (obj, first) {
                 q.pagenum = obj.curr
                 q.pagesize = obj.limit
-                if(!first){
+                if (!first) {
                     initTable()
                 }
             }
         })
     }
+
+    // 通过代理的形式为删除按钮绑定点击事件
+    $('tbody').on('click', '#btn-delete', function () {
+        // 获取页面删除按钮的个数
+        let len = $('#btn-delete').length
+        let id = $(this).attr('data-id')
+        layer.confirm('确认删除', {
+            icon: 3,
+            title: '提示'
+        }, function (index) {
+            //do something
+            $.ajax({
+                method: 'GET',
+                url: '/my/article/delete/' + id,
+                success: function (res) {
+                    if (res.status !== 0) {
+                        return layer.msg('删除失败')
+                    }
+                    layer.msg('删除成功')
+                    if (len === 1) {
+                        q.pagenum = q.pagenum === 1 ? 1 : q.pagenum - 1
+                    }
+                    initTable()
+                }
+            })
+            layer.close(index);
+        });
+    })
 })
