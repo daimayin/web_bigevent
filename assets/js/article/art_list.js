@@ -108,7 +108,9 @@ $(function () {
     // 通过代理的形式为删除按钮绑定点击事件
     $('tbody').on('click', '#btn-delete', function () {
         // 获取页面删除按钮的个数
-        let len = $('#btn-delete').length
+        // let len = $('#btn-delete').length
+        let len = $('[id=btn-delete]').length
+        console.log(len);
         let id = $(this).attr('data-id')
         layer.confirm('确认删除', {
             icon: 3,
